@@ -1,0 +1,61 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
+dist/
+build/
+*.whl
+.venv/
+venv/
+env/
+.python-version
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Vue / Node
+node_modules/
+dist/
+.output/
+.nuxt/
+*.local
+
+# Bun
+bun.lockb
+
+# Environment
+.env
+.env.*
+!.env.sample
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude Code
+CLAUDE.md
+.claude/status_lines/
+
+temp/
+mprocs.log
+
+*-firebase-adminsdk-*.json
+
+.playwright-cli/
+
+screenshots/
+
+images/*.webp
+images/*.mov
+
+.DS_Store
