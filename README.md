@@ -1,6 +1,6 @@
 # B_owser
 
-> Agentic browser automation and ui testing system — built with composable skills, subagent, command, and justfile layered architecture for repeatable, deployable browser use.
+> Agentic browser automation and ui testing system — built with composable skills, subagent, command, and justfile layered architecture for repeatable, deployable browser use. Watch the [breakdown video](https://youtu.be/efctPj6bjCY) to see how Bowser works.
 
 <p align="center">
   <img src="images/bowser_11.jpg" width="800" />
