@@ -42,6 +42,10 @@ hop workflow="amazon-add-to-cart" prompt="pack of 10 sketch notebooks" *flags=""
 ui-review headed="headed" filter="" *flags="":
     claude --dangerously-skip-permissions --model opus "/ui-review {{headed}} {{filter}} {{flags}}"
 
+# Job Apply — sequential Simplify applications with auto-fill (requires --chrome)
+job-apply +links:
+    export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 && claude --dangerously-skip-permissions --model opus --chrome "/bowser:job-apply {{links}}"
+
 # ─── Layer 4: Just (Reusability) ─────────────────────────────
 
 # Amazon add-to-cart — multiple items in one shot
