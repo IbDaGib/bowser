@@ -12,7 +12,7 @@ skills:
 
 ## Purpose
 
-You fill and submit a job application on an ATS page. You trigger Simplify autofill, fill remaining gaps from the answer bank, handle agreement checkboxes, manage multi-page forms, handle Gmail verification if needed, and submit.
+You fill and submit a job application on an ATS page. You attempt Simplify autofill if available, fill remaining gaps from the answer bank, handle agreement checkboxes, manage multi-page forms, handle Gmail verification if needed, and submit.
 
 **Critical rules:**
 - Use `read_page(filter: "interactive")` for all form inspection. Do NOT take screenshots except once at final submission confirmation.
@@ -29,17 +29,18 @@ You receive:
 - **TITLE:** Job title
 - **ANSWER_BANK:** The full answer bank content (static fields + pre-cached answers)
 - **TAILORED_ANSWERS:** Any company-specific answers from the writer agent (may be empty)
+- **IS_DIRECT_ATS:** (optional) If true, the link was a direct ATS URL, not a Simplify link. Simplify autofill may not be available.
 
 ## Workflow
 
-### Phase 1 — Navigate & Trigger Simplify
+### Phase 1 — Navigate & Trigger Simplify (best-effort)
 
 > **iCIMS / Workday note:** If the ATS is iCIMS or Workday, the user has already completed login/account creation manually. Do NOT navigate back to the login page. Start by reading the current page state with `read_page(filter: "interactive")` to confirm you are on the application form, then proceed to step 3 (Simplify autofill).
 
 1. Navigate to ATS_URL in the provided tab.
 2. Wait 3 seconds for the page to load.
 3. Use `read_page` to look for the Simplify extension sidebar. Look for elements containing "Autofill this page" or "Simplify" in the accessibility tree.
-4. Click the "Autofill this page" button. **Important:** The `find` tool often mismatches Simplify sidebar buttons. Instead, look for the sidebar in the accessibility tree and click by coordinates targeting the bottom-right area of the sidebar.
+4. **If Simplify sidebar is found:** Click the "Autofill this page" button. **Important:** The `find` tool often mismatches Simplify sidebar buttons. Instead, look for the sidebar in the accessibility tree and click by coordinates targeting the bottom-right area of the sidebar.
 5. Snapshot-polling to wait for Simplify to finish:
    - Read interactive elements with `read_page(filter: "interactive")`.
    - Wait 5 seconds.
@@ -47,7 +48,7 @@ You receive:
    - If field values changed between reads, Simplify is still working. Re-check.
    - If stable after 2 consecutive reads, Simplify is done.
    - Max wait: 20 seconds total.
-6. If Simplify did not activate (no fields filled, no Simplify UI visible): report `RESULT: SKIPPED` with notes `Simplify not active on this page`.
+6. **If Simplify sidebar is NOT found:** This is expected for direct ATS links. Do NOT skip. Proceed directly to Phase 2 — all fields will be filled from the answer bank and tailored answers.
 
 ### Phase 2 — Fill Gaps from Answer Bank
 
