@@ -42,9 +42,13 @@ hop workflow="amazon-add-to-cart" prompt="pack of 10 sketch notebooks" *flags=""
 ui-review headed="headed" filter="" *flags="":
     claude --dangerously-skip-permissions --model opus "/ui-review {{headed}} {{filter}} {{flags}}"
 
-# Job Apply — sequential Simplify applications with auto-fill (requires --chrome)
+# Job Apply v2 — multi-agent optimized (requires --chrome)
 job-apply +links:
-    export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 && claude --dangerously-skip-permissions --model opus --chrome "/bowser:job-apply {{links}}"
+    export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 && claude --dangerously-skip-permissions --model sonnet --chrome "/bowser:job-apply {{links}}"
+
+# Job Apply (legacy) — original single-agent Opus approach (requires --chrome)
+job-apply-legacy +links:
+    export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 && claude --dangerously-skip-permissions --model opus --chrome "/bowser:job-apply-legacy {{links}}"
 
 # ─── Layer 4: Just (Reusability) ─────────────────────────────
 
