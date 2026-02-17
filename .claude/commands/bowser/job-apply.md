@@ -1,20 +1,24 @@
 ---
 model: sonnet
-description: Apply to multiple jobs via Simplify links — multi-agent workflow dispatching to specialized research, writer, and form-filler agents for cost-optimized applications
-argument-hint: <simplify links separated by newlines, commas, or spaces>
+description: Apply to multiple jobs via job links (Simplify or direct ATS URLs) — multi-agent workflow dispatching to specialized research, writer, and form-filler agents for cost-optimized applications
+argument-hint: <job links separated by newlines, commas, or spaces>
 ---
 
 # Job Apply (v2 — Multi-Agent)
 
-Apply to multiple jobs using Simplify links. Dispatches to specialized agents: a Sonnet research agent screens jobs, a Haiku form filler handles mechanical work, and an Opus writer handles only tailored free-text answers. ~60-75% cheaper than the legacy single-agent approach.
+Apply to multiple jobs using job links. Accepts both Simplify links (`https://simplify.jobs/p/...`) and direct ATS URLs (Greenhouse, Lever, Ashby, etc.). Dispatches to specialized agents: a Sonnet research agent screens jobs, a Haiku form filler handles mechanical work, and an Opus writer handles only tailored free-text answers. ~60-75% cheaper than the legacy single-agent approach.
 
 ## Workflow
 
 ### Step 1 — Parse Links
 
-Extract all URLs matching `https://simplify.jobs/p/*` from `$ARGUMENTS`. Links may be separated by newlines, commas, or spaces. Deduplicate. Reject any non-Simplify URLs and warn about them.
+Extract all URLs from `$ARGUMENTS`. Links may be separated by newlines, commas, or spaces. Deduplicate.
 
-If no valid Simplify links found, stop with: _"No valid Simplify links found. Please provide links in the format: `https://simplify.jobs/p/...`"_
+Classify each link:
+- **Simplify link:** matches `https://simplify.jobs/p/*` — research agent will extract ATS URL from Simplify page
+- **Direct ATS link:** any other job URL (e.g., `boards.greenhouse.io`, `jobs.lever.co`, `jobs.ashbyhq.com`, `*.icims.com`, `myworkdayjobs.com`, company career pages with `gh_jid` params, etc.) — research agent navigates directly
+
+If no valid URLs found, stop with: _"No valid links found. Please provide Simplify links or direct ATS URLs."_
 
 ### Step 2 — Pre-load Answer Bank
 
@@ -25,18 +29,19 @@ Do NOT read `resume.md` or `ibrahim.md` at this level. The specialized agents lo
 
 ### Step 3 — Process Each Link
 
-For each Simplify link sequentially (one Chrome instance, no parallelism):
+For each link sequentially (one Chrome instance, no parallelism):
 
 **Phase A — Research (via @job-research-agent)**
 
-Spawn a `@job-research-agent` with the Simplify URL and the current tab ID.
+Spawn a `@job-research-agent` with the job URL (Simplify or direct ATS) and the current tab ID.
 
 The research agent will:
-1. Navigate to the Simplify page
+1. Navigate to the URL
 2. Read the job posting (no screenshots)
 3. Run qualification fit check
-4. Extract the ATS URL and navigate to it
-5. Verify the ATS domain is supported
+4. If Simplify link: extract the ATS URL and navigate to it
+5. If direct ATS link: already on the ATS page
+6. Verify the ATS domain is supported
 
 It returns a structured payload:
 ```
@@ -88,10 +93,11 @@ Spawn a `@job-form-filler-agent` with:
 - COMPANY, TITLE from Phase A
 - ANSWER_BANK: the full answer-bank.md content
 - TAILORED_ANSWERS: any answers from Phase B (may be empty)
+- IS_DIRECT_ATS: true if the original link was not a Simplify link
 
 The form filler will:
 1. Navigate to the ATS page
-2. Trigger Simplify autofill
+2. Attempt Simplify autofill (best-effort — may not be available for direct ATS links)
 3. Fill gaps from the answer bank
 4. Check agreement checkboxes
 5. Handle multi-page forms
