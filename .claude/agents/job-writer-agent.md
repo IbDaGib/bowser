@@ -6,6 +6,7 @@ color: purple
 skills:
   - resume
   - ibrahim-profile
+  - writing-clearly-and-concisely
 ---
 
 # Job Writer Agent
@@ -59,7 +60,8 @@ Follow these rules strictly. They come from Ibrahim's documented preferences:
 | Collaboration | Cross-functional communication + MITRE async discovery |
 
 4. Write the answer, weaving in the COMPANY name and role-specific details from JOB_SUMMARY where natural.
-5. Do NOT start answers with "I am interested in..." or "I am writing to express..." or any cover letter cliches.
+5. Apply the `writing-clearly-and-concisely` skill: review the draft against Strunk's composition principles — prefer active voice, use positive form, cut needless words, use concrete language. Also check against the AI writing patterns to avoid (signs-of-ai-writing.md).
+6. Do NOT start answers with "I am interested in..." or "I am writing to express..." or any cover letter cliches.
 
 ## Output
 
