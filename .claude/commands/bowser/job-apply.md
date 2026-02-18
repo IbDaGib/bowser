@@ -79,11 +79,15 @@ If STATUS is `NEEDS_VERIFICATION`:
 
 **Phase B — Pre-generate Tailored Answers (via @job-writer-agent, conditional)**
 
-Review the JOB_SUMMARY. If it suggests the application will have company-specific free-text questions (e.g., "why this company?", role-specific motivation questions), spawn a `@job-writer-agent` with:
+**Special case — `ATS_PLATFORM: workatastartup`:** Always run Phase B, no conditions. The entire application is a founder message — tailoring is mandatory. Spawn `@job-writer-agent` with:
+- QUESTION_TEXT: "Write a compelling intro message to the founder of {COMPANY} explaining who you are and why you're excited about this role. Conversational tone, 300-500 chars, human-sounding."
+- COMPANY, TITLE, JOB_SUMMARY from Phase A
+
+**All other platforms:** Review the JOB_SUMMARY. If it suggests the application will have company-specific free-text questions (e.g., "why this company?", role-specific motivation questions), spawn a `@job-writer-agent` with:
 - QUESTION_TEXT: "Why are you interested in this role at {COMPANY}?"
 - COMPANY, TITLE, JOB_SUMMARY from Phase A
 
-Merge the writer's response with the pre-cached answers from the answer bank. This pre-generation step is optional and only runs when company-specific tailoring is clearly needed.
+Merge the writer's response with the pre-cached answers from the answer bank. For non-workatastartup platforms, this pre-generation step is optional and only runs when company-specific tailoring is clearly needed.
 
 **Phase C — Fill & Submit (via @job-form-filler-agent)**
 

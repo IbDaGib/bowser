@@ -103,6 +103,14 @@ If extraction fails, try reading the page for a direct "Apply" link URL as fallb
 6. Run Qualification Fit Check (same rules as Phase 4 above).
 7. The current URL is the ATS URL. Read the domain from the current page URL.
 
+**Special case — YC / Work at a Startup:**
+If the URL matches `ycombinator.com/companies/.../jobs/...` or `workatastartup.com/jobs/...`:
+- Extract COMPANY, TITLE, and JOB_SUMMARY from the page text as normal.
+- If currently on `ycombinator.com`, look in the page for a link to `workatastartup.com/jobs/{id}` (the "Apply to role" or job detail link). Navigate to that URL.
+- If already on `workatastartup.com/jobs/{id}`, stay on the current page.
+- Set ATS_URL = the `workatastartup.com/jobs/{id}` URL (e.g., `https://www.workatastartup.com/jobs/12345`).
+- Proceed to Domain Check with this ATS_URL.
+
 **Special case — Company career pages (not direct ATS):**
 If the URL is a company career page (e.g., `housecallpro.com/careers`) with a `gh_jid` parameter or similar, look for the "Apply" button/link on the page. If it leads to a known ATS domain, navigate to it. If the page itself contains the application form, treat the current URL as the ATS URL.
 
@@ -124,7 +132,8 @@ Check the final URL domain against supported ATS platforms:
    - `VERIFICATION_URL`: the current ATS URL
    - `VERIFICATION_REASON`: "Workday requires account creation or login"
    - `VERIFICATION_ACTION`: "Create an account or log in at the URL above. Stop when you reach the application form."
-7. If domain not supported: return `STATUS: SKIP` with `SKIP_REASON: Unsupported ATS: {domain}`
+7. **YC Work at a Startup** (`workatastartup.com`): return `STATUS: PROCEED` with `ATS_PLATFORM: workatastartup`. No login automation needed — user is assumed to already be logged into their YC account.
+8. If domain not supported: return `STATUS: SKIP` with `SKIP_REASON: Unsupported ATS: {domain}`
 
 ### Phase 7 — Return Payload
 
@@ -136,6 +145,7 @@ COMPANY: {company name}
 TITLE: {job title}
 JOB_SUMMARY: {2-3 sentence summary}
 ATS_URL: {final ATS page URL}
+ATS_PLATFORM: {platform identifier, e.g. workatastartup — only include when relevant}
 SKIP_REASON: {reason, only if STATUS is SKIP}
 VERIFICATION_URL: {url, only if STATUS is NEEDS_VERIFICATION}
 VERIFICATION_REASON: {reason, only if STATUS is NEEDS_VERIFICATION}

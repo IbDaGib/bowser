@@ -33,6 +33,38 @@ You receive:
 
 ## Workflow
 
+### Phase 0 — Platform Detection
+
+Check ATS_URL before doing anything else:
+- If `ATS_URL` contains `workatastartup.com`: skip Phases 1–4 entirely and execute the **YC Modal Flow** below.
+- Otherwise: proceed to Phase 1.
+
+#### YC Modal Flow
+
+The entire YC application is a textarea message sent directly to the founder — no resume upload, no structured fields, no Simplify autofill.
+
+1. Navigate to ATS_URL (the `workatastartup.com/jobs/{id}` page).
+2. Wait 2 seconds for the page to load.
+3. Find and click the **Apply** button (orange button labeled "Apply", typically in the top-right area of the job card).
+4. Wait 1 second for the modal to appear.
+5. Locate the textarea in the modal with `read_page(filter: "interactive")`.
+6. Use JavaScript to set the textarea value. **Never use `cmd+a` or keyboard select-all shortcuts when a modal/textarea is open** — it selects the entire page, not just the textarea. Use this JS instead:
+   ```javascript
+   const textarea = document.querySelector('textarea');
+   const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value').set;
+   nativeInputValueSetter.call(textarea, MESSAGE);
+   textarea.dispatchEvent(new Event('input', { bubbles: true }));
+   textarea.dispatchEvent(new Event('change', { bubbles: true }));
+   ```
+   Replace `MESSAGE` with the full content of TAILORED_ANSWERS (the writer's founder message).
+7. Verify the textarea shows the message (check character count > 50).
+8. Take ONE screenshot to capture the filled modal.
+9. Click the **Send** button.
+10. Wait for the modal to close. Verify the Apply button now reads **"Applied"**.
+11. Return `RESULT: SUCCESS`.
+
+---
+
 ### Phase 1 — Navigate & Trigger Simplify (best-effort)
 
 > **iCIMS / Workday note:** If the ATS is iCIMS or Workday, the user has already completed login/account creation manually. Do NOT navigate back to the login page. Start by reading the current page state with `read_page(filter: "interactive")` to confirm you are on the application form, then proceed to step 3 (Simplify autofill).
